@@ -1,0 +1,13 @@
+name: client_version
+description: Client version protocol (SPEC.md) for Dart and Flutter apps - X-Client-Version, upgrade signals, a Dio interceptor.
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ^3.5.0
+
+dependencies:
+  dio: ^5.4.0
+
+dev_dependencies:
+  test: ^1.25.0

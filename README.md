@@ -8,7 +8,7 @@ implementation runs.
 |----------------|-------|----------|
 | TypeScript (servers, Workers, web) | `src/index.ts` (root `package.json`) | `"@omumu/client-version": "github:omumuas/client-version"` |
 | Swift (Mac/iOS apps) | `Sources/ClientVersion` (root `Package.swift`) | `.package(url: "git@github.com:omumuas/client-version.git", from: "1.0.0")` |
-| Dart (Flutter apps) | `dart/` (planned) | `git: {url: ..., path: dart}` |
+| Dart (Flutter apps) | `dart/` (`package:client_version`, incl. a Dio interceptor) | `client_version: {git: {url: git@github.com:omumuas/client-version.git, path: dart, ref: v1.1.0}}` |
 | Java (gabbro servlet filter) | `modules/gabbro` (planned), runs this `cases.json` | |
 
 In short:
@@ -24,4 +24,5 @@ In short:
 npm test          # TypeScript against cases.json
 npm run typecheck
 swift test        # Swift against cases.json
+(cd dart && dart test)   # Dart against cases.json
 ```

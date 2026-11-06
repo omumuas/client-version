@@ -2,3 +2,5 @@ node_modules/
 .build/
 .swiftpm/
 .DS_Store
+.dart_tool/
+dart/pubspec.lock
