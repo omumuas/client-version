@@ -1,0 +1,24 @@
+{
+  "name": "@omumu/client-version",
+  "version": "1.0.0",
+  "description": "Client version protocol: X-Client-Version, soft/hard upgrade levels, version gating (see SPEC.md)",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "src",
+    "SPEC.md",
+    "cases.json"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "typescript": "^5.9.3"
+  },
+  "license": "UNLICENSED",
+  "private": true
+}

@@ -1,0 +1,641 @@
+{
+  "description": "Client version protocol conformance cases (SPEC.md). Every implementation must pass all of them.",
+  "version": 1,
+  "parse": [
+    {
+      "input": "fleshtimer/1.2.0+42 (macos)",
+      "expected": {
+        "app": "fleshtimer",
+        "version": "1.2.0",
+        "build": "42",
+        "platform": "macos"
+      }
+    },
+    {
+      "input": "fleshtimer/1.2.0 (macos)",
+      "expected": {
+        "app": "fleshtimer",
+        "version": "1.2.0",
+        "build": null,
+        "platform": "macos"
+      }
+    },
+    {
+      "input": "omumu-pod/2.0+2024.11.3-rc1 (ios)",
+      "expected": {
+        "app": "omumu-pod",
+        "version": "2.0",
+        "build": "2024.11.3-rc1",
+        "platform": "ios"
+      }
+    },
+    {
+      "input": "  fleshtimer/1 (android)  ",
+      "expected": {
+        "app": "fleshtimer",
+        "version": "1",
+        "build": null,
+        "platform": "android"
+      }
+    },
+    {
+      "input": "fleshtimer/1.2.3.4 (web)",
+      "expected": {
+        "app": "fleshtimer",
+        "version": "1.2.3.4",
+        "build": null,
+        "platform": "web"
+      }
+    },
+    {
+      "input": "fleshtimer/1.02.0 (macos)",
+      "expected": {
+        "app": "fleshtimer",
+        "version": "1.02.0",
+        "build": null,
+        "platform": "macos"
+      }
+    },
+    {
+      "input": "",
+      "expected": null
+    },
+    {
+      "input": "fleshtimer",
+      "expected": null
+    },
+    {
+      "input": "fleshtimer/1.2.0",
+      "expected": null
+    },
+    {
+      "input": "Fleshtimer/1.2.0 (macos)",
+      "expected": null
+    },
+    {
+      "input": "fleshtimer/1.2.0 (macOS)",
+      "expected": null
+    },
+    {
+      "input": "fleshtimer/1.2.3.4.5 (macos)",
+      "expected": null
+    },
+    {
+      "input": "fleshtimer/v1.2 (macos)",
+      "expected": null
+    },
+    {
+      "input": "fleshtimer/1.2.0+ (macos)",
+      "expected": null
+    },
+    {
+      "input": "fleshtimer/1.2.0+42 (macos) extra",
+      "expected": null
+    },
+    {
+      "input": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+      "expected": null
+    }
+  ],
+  "compare": [
+    {
+      "a": "1.2.0",
+      "b": "1.2.0",
+      "expected": 0
+    },
+    {
+      "a": "1.2",
+      "b": "1.2.0",
+      "expected": 0
+    },
+    {
+      "a": "1",
+      "b": "1.0.0.0",
+      "expected": 0
+    },
+    {
+      "a": "1.02",
+      "b": "1.2",
+      "expected": 0
+    },
+    {
+      "a": "1.2.0",
+      "b": "1.10.0",
+      "expected": -1
+    },
+    {
+      "a": "1.10.0",
+      "b": "1.9.9",
+      "expected": 1
+    },
+    {
+      "a": "2",
+      "b": "1.99.99",
+      "expected": 1
+    },
+    {
+      "a": "1.2.0.1",
+      "b": "1.2",
+      "expected": 1
+    },
+    {
+      "a": "0.9",
+      "b": "1.0",
+      "expected": -1
+    }
+  ],
+  "evaluate": [
+    {
+      "name": "current client: no headers",
+      "policy": [
+        {
+          "app": "fleshtimer",
+          "platform": "macos",
+          "minimum": "1.2.0",
+          "recommended": "1.4.0",
+          "upgradeUrl": "https://apps.apple.com/app/id6830173151"
+        }
+      ],
+      "clientVersion": "fleshtimer/1.4.0+50 (macos)",
+      "method": "PUT",
+      "expected": {
+        "level": "none",
+        "refuse": false,
+        "headers": {}
+      }
+    },
+    {
+      "name": "newer than recommended",
+      "policy": [
+        {
+          "app": "fleshtimer",
+          "platform": "macos",
+          "minimum": "1.2.0",
+          "recommended": "1.4.0",
+          "upgradeUrl": "https://apps.apple.com/app/id6830173151"
+        }
+      ],
+      "clientVersion": "fleshtimer/2.0 (macos)",
+      "method": "GET",
+      "expected": {
+        "level": "none",
+        "refuse": false,
+        "headers": {}
+      }
+    },
+    {
+      "name": "below recommended, read: nudged",
+      "policy": [
+        {
+          "app": "fleshtimer",
+          "platform": "macos",
+          "minimum": "1.2.0",
+          "recommended": "1.4.0",
+          "upgradeUrl": "https://apps.apple.com/app/id6830173151"
+        }
+      ],
+      "clientVersion": "fleshtimer/1.3.9 (macos)",
+      "method": "GET",
+      "expected": {
+        "level": "recommended",
+        "refuse": false,
+        "headers": {
+          "X-Client-Upgrade": "recommended",
+          "X-Upgrade-URL": "https://apps.apple.com/app/id6830173151"
+        }
+      }
+    },
+    {
+      "name": "below recommended, write: nudged and served",
+      "policy": [
+        {
+          "app": "fleshtimer",
+          "platform": "macos",
+          "minimum": "1.2.0",
+          "recommended": "1.4.0",
+          "upgradeUrl": "https://apps.apple.com/app/id6830173151"
+        }
+      ],
+      "clientVersion": "fleshtimer/1.3.9 (macos)",
+      "method": "PATCH",
+      "expected": {
+        "level": "recommended",
+        "refuse": false,
+        "headers": {
+          "X-Client-Upgrade": "recommended",
+          "X-Upgrade-URL": "https://apps.apple.com/app/id6830173151"
+        }
+      }
+    },
+    {
+      "name": "exactly minimum is only recommended",
+      "policy": [
+        {
+          "app": "fleshtimer",
+          "platform": "macos",
+          "minimum": "1.2.0",
+          "recommended": "1.4.0",
+          "upgradeUrl": "https://apps.apple.com/app/id6830173151"
+        }
+      ],
+      "clientVersion": "fleshtimer/1.2 (macos)",
+      "method": "PUT",
+      "expected": {
+        "level": "recommended",
+        "refuse": false,
+        "headers": {
+          "X-Client-Upgrade": "recommended",
+          "X-Upgrade-URL": "https://apps.apple.com/app/id6830173151"
+        }
+      }
+    },
+    {
+      "name": "below minimum, read: served with required",
+      "policy": [
+        {
+          "app": "fleshtimer",
+          "platform": "macos",
+          "minimum": "1.2.0",
+          "recommended": "1.4.0",
+          "upgradeUrl": "https://apps.apple.com/app/id6830173151"
+        }
+      ],
+      "clientVersion": "fleshtimer/1.1.9 (macos)",
+      "method": "GET",
+      "expected": {
+        "level": "required",
+        "refuse": false,
+        "headers": {
+          "X-Client-Upgrade": "required",
+          "X-Upgrade-URL": "https://apps.apple.com/app/id6830173151"
+        }
+      }
+    },
+    {
+      "name": "below minimum, HEAD and OPTIONS are reads",
+      "policy": [
+        {
+          "app": "fleshtimer",
+          "platform": "macos",
+          "minimum": "1.2.0",
+          "recommended": "1.4.0",
+          "upgradeUrl": "https://apps.apple.com/app/id6830173151"
+        }
+      ],
+      "clientVersion": "fleshtimer/1.1.9 (macos)",
+      "method": "OPTIONS",
+      "expected": {
+        "level": "required",
+        "refuse": false,
+        "headers": {
+          "X-Client-Upgrade": "required",
+          "X-Upgrade-URL": "https://apps.apple.com/app/id6830173151"
+        }
+      }
+    },
+    {
+      "name": "below minimum, write: 426",
+      "policy": [
+        {
+          "app": "fleshtimer",
+          "platform": "macos",
+          "minimum": "1.2.0",
+          "recommended": "1.4.0",
+          "upgradeUrl": "https://apps.apple.com/app/id6830173151"
+        }
+      ],
+      "clientVersion": "fleshtimer/1.1.9+30 (macos)",
+      "method": "PUT",
+      "expected": {
+        "level": "required",
+        "refuse": true,
+        "headers": {
+          "X-Client-Upgrade": "required",
+          "X-Upgrade-URL": "https://apps.apple.com/app/id6830173151"
+        },
+        "body": {
+          "error": "upgrade_required",
+          "message": "This version of the app is no longer supported. Please update.",
+          "upgradeUrl": "https://apps.apple.com/app/id6830173151"
+        }
+      }
+    },
+    {
+      "name": "below minimum, POST: 426",
+      "policy": [
+        {
+          "app": "fleshtimer",
+          "platform": "macos",
+          "minimum": "1.2.0",
+          "recommended": "1.4.0",
+          "upgradeUrl": "https://apps.apple.com/app/id6830173151"
+        }
+      ],
+      "clientVersion": "fleshtimer/0.9 (macos)",
+      "method": "POST",
+      "expected": {
+        "level": "required",
+        "refuse": true,
+        "headers": {
+          "X-Client-Upgrade": "required",
+          "X-Upgrade-URL": "https://apps.apple.com/app/id6830173151"
+        },
+        "body": {
+          "error": "upgrade_required",
+          "message": "This version of the app is no longer supported. Please update.",
+          "upgradeUrl": "https://apps.apple.com/app/id6830173151"
+        }
+      }
+    },
+    {
+      "name": "below minimum, DELETE: 426",
+      "policy": [
+        {
+          "app": "fleshtimer",
+          "platform": "macos",
+          "minimum": "1.2.0",
+          "recommended": "1.4.0",
+          "upgradeUrl": "https://apps.apple.com/app/id6830173151"
+        }
+      ],
+      "clientVersion": "fleshtimer/0.9 (macos)",
+      "method": "DELETE",
+      "expected": {
+        "level": "required",
+        "refuse": true,
+        "headers": {
+          "X-Client-Upgrade": "required",
+          "X-Upgrade-URL": "https://apps.apple.com/app/id6830173151"
+        },
+        "body": {
+          "error": "upgrade_required",
+          "message": "This version of the app is no longer supported. Please update.",
+          "upgradeUrl": "https://apps.apple.com/app/id6830173151"
+        }
+      }
+    },
+    {
+      "name": "method case does not matter",
+      "policy": [
+        {
+          "app": "fleshtimer",
+          "platform": "macos",
+          "minimum": "1.2.0",
+          "recommended": "1.4.0",
+          "upgradeUrl": "https://apps.apple.com/app/id6830173151"
+        }
+      ],
+      "clientVersion": "fleshtimer/0.9 (macos)",
+      "method": "put",
+      "expected": {
+        "level": "required",
+        "refuse": true,
+        "headers": {
+          "X-Client-Upgrade": "required",
+          "X-Upgrade-URL": "https://apps.apple.com/app/id6830173151"
+        },
+        "body": {
+          "error": "upgrade_required",
+          "message": "This version of the app is no longer supported. Please update.",
+          "upgradeUrl": "https://apps.apple.com/app/id6830173151"
+        }
+      }
+    },
+    {
+      "name": "build number is ignored",
+      "policy": [
+        {
+          "app": "fleshtimer",
+          "platform": "macos",
+          "minimum": "1.2.0",
+          "recommended": "1.4.0",
+          "upgradeUrl": "https://apps.apple.com/app/id6830173151"
+        }
+      ],
+      "clientVersion": "fleshtimer/1.4.0+1 (macos)",
+      "method": "PUT",
+      "expected": {
+        "level": "none",
+        "refuse": false,
+        "headers": {}
+      }
+    },
+    {
+      "name": "missing header: unknown counts as current",
+      "policy": [
+        {
+          "app": "fleshtimer",
+          "platform": "macos",
+          "minimum": "1.2.0",
+          "recommended": "1.4.0",
+          "upgradeUrl": "https://apps.apple.com/app/id6830173151"
+        }
+      ],
+      "clientVersion": null,
+      "method": "PUT",
+      "expected": {
+        "level": "none",
+        "refuse": false,
+        "headers": {}
+      }
+    },
+    {
+      "name": "malformed header: unknown counts as current",
+      "policy": [
+        {
+          "app": "fleshtimer",
+          "platform": "macos",
+          "minimum": "1.2.0",
+          "recommended": "1.4.0",
+          "upgradeUrl": "https://apps.apple.com/app/id6830173151"
+        }
+      ],
+      "clientVersion": "Fleshtimer 1.0",
+      "method": "PUT",
+      "expected": {
+        "level": "none",
+        "refuse": false,
+        "headers": {}
+      }
+    },
+    {
+      "name": "other platform has no policy",
+      "policy": [
+        {
+          "app": "fleshtimer",
+          "platform": "macos",
+          "minimum": "1.2.0",
+          "recommended": "1.4.0",
+          "upgradeUrl": "https://apps.apple.com/app/id6830173151"
+        }
+      ],
+      "clientVersion": "fleshtimer/0.1 (ios)",
+      "method": "PUT",
+      "expected": {
+        "level": "none",
+        "refuse": false,
+        "headers": {}
+      }
+    },
+    {
+      "name": "other app has no policy",
+      "policy": [
+        {
+          "app": "fleshtimer",
+          "platform": "macos",
+          "minimum": "1.2.0",
+          "recommended": "1.4.0",
+          "upgradeUrl": "https://apps.apple.com/app/id6830173151"
+        }
+      ],
+      "clientVersion": "omumu-pod/0.1 (macos)",
+      "method": "PUT",
+      "expected": {
+        "level": "none",
+        "refuse": false,
+        "headers": {}
+      }
+    },
+    {
+      "name": "no policy at all",
+      "policy": [],
+      "clientVersion": "fleshtimer/0.1 (macos)",
+      "method": "PUT",
+      "expected": {
+        "level": "none",
+        "refuse": false,
+        "headers": {}
+      }
+    },
+    {
+      "name": "only minimum: below it is required",
+      "policy": [
+        {
+          "app": "fleshtimer",
+          "platform": "macos",
+          "minimum": "1.0"
+        }
+      ],
+      "clientVersion": "fleshtimer/0.9 (macos)",
+      "method": "PUT",
+      "expected": {
+        "level": "required",
+        "refuse": true,
+        "headers": {
+          "X-Client-Upgrade": "required"
+        },
+        "body": {
+          "error": "upgrade_required",
+          "message": "This version of the app is no longer supported. Please update."
+        }
+      }
+    },
+    {
+      "name": "only minimum: at it is none",
+      "policy": [
+        {
+          "app": "fleshtimer",
+          "platform": "macos",
+          "minimum": "1.0"
+        }
+      ],
+      "clientVersion": "fleshtimer/1.0 (macos)",
+      "method": "PUT",
+      "expected": {
+        "level": "none",
+        "refuse": false,
+        "headers": {}
+      }
+    },
+    {
+      "name": "only recommended, no url",
+      "policy": [
+        {
+          "app": "fleshtimer",
+          "platform": "macos",
+          "recommended": "1.5"
+        }
+      ],
+      "clientVersion": "fleshtimer/1.0 (macos)",
+      "method": "GET",
+      "expected": {
+        "level": "recommended",
+        "refuse": false,
+        "headers": {
+          "X-Client-Upgrade": "recommended"
+        }
+      }
+    },
+    {
+      "name": "recommended below minimum: minimum wins",
+      "policy": [
+        {
+          "app": "fleshtimer",
+          "platform": "macos",
+          "minimum": "2.0",
+          "recommended": "1.0"
+        }
+      ],
+      "clientVersion": "fleshtimer/1.5 (macos)",
+      "method": "GET",
+      "expected": {
+        "level": "required",
+        "refuse": false,
+        "headers": {
+          "X-Client-Upgrade": "required"
+        }
+      }
+    },
+    {
+      "name": "platforms are separate entries",
+      "policy": [
+        {
+          "app": "fleshtimer",
+          "platform": "macos",
+          "minimum": "1.2.0",
+          "recommended": "1.4.0",
+          "upgradeUrl": "https://apps.apple.com/app/id6830173151"
+        },
+        {
+          "app": "fleshtimer",
+          "platform": "ios",
+          "minimum": "3.0"
+        }
+      ],
+      "clientVersion": "fleshtimer/1.4.0 (macos)",
+      "method": "PUT",
+      "expected": {
+        "level": "none",
+        "refuse": false,
+        "headers": {}
+      }
+    }
+  ],
+  "atLeast": [
+    {
+      "clientVersion": "fleshtimer/1.3.0 (macos)",
+      "version": "1.3",
+      "expected": true
+    },
+    {
+      "clientVersion": "fleshtimer/1.2.9 (macos)",
+      "version": "1.3",
+      "expected": false
+    },
+    {
+      "clientVersion": "fleshtimer/1.3.0+1 (macos)",
+      "version": "1.3.0.1",
+      "expected": false
+    },
+    {
+      "clientVersion": null,
+      "version": "99.0",
+      "expected": true
+    },
+    {
+      "clientVersion": "garbage",
+      "version": "99.0",
+      "expected": true
+    }
+  ]
+}
