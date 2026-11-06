@@ -96,6 +96,10 @@ browsers list `X-Client-Upgrade, X-Upgrade-URL` in `Access-Control-Expose-Header
 Reads keep working below `minimum` on purpose: an outdated app can still show the user their data,
 and cannot corrupt it.
 
+**Scope.** Apply the check to the application API, not to authentication endpoints. An OAuth token
+refresh is a `POST`; refusing it would end the session and with it the reads that are meant to keep
+working. (The `426` of a WebSocket endpoint that is called without `Upgrade: websocket` is unrelated.)
+
 ## Client behaviour
 
 - Send `X-Client-Version` on every request (and `client_version` on WebSocket URLs).
